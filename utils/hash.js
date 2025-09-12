@@ -5,3 +5,7 @@ const doHash = (value, saltValue) => {
   return hashedValue;
 };
 export default doHash;
+export const doHashValidation = async (value, hashedValue) => {
+  const result = await bcrypt.compare(value, hashedValue);
+  return result;
+};
