@@ -1,4 +1,8 @@
-import { signUpSchema, loginInSchema } from "../middleware/validation.js";
+import {
+  signUpSchema,
+  loginInSchema,
+  changePasswordSchema,
+} from "../middleware/validation.js";
 import User from "../model/userModel.js";
 import doHash from "../utils/hash.js";
 import { doHashValidation } from "../utils/hash.js";
@@ -60,6 +64,54 @@ export const login = async (req, res) => {
         secure: process.env.NODE_ENV === "production",
       })
       .json({ success: true, message: "Login successful", token });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const signOut = (req, res) => {
+  res.clearCookie("Authorization", {
+    httpOnly: true,
+    secure: false, // i set this to false for testing in postman
+  });
+  res.json({ success: true, message: "Signout successful" });
+};
+
+export const changePassword = async (req, res) => {
+  //   const userId = req.User;
+  const userId = req.user?.userId;
+  const { oldPassword, newPassword } = req.body;
+  try {
+    const { error, value } = changePasswordSchema.validate({
+      oldPassword,
+      newPassword,
+    });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+    const existingUser = await User.findOne({ _id: userId }).select(
+      "+password"
+    );
+    if (!existingUser) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User does not exist" });
+    }
+    const passwordMatch = await doHashValidation(
+      oldPassword,
+      existingUser.password
+    );
+    if (!passwordMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Old password is incorrect" });
+    }
+    const hashedPassword = await doHash(newPassword, 12);
+    existingUser.password = hashedPassword;
+    await existingUser.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "passsword updated" });
   } catch (err) {
     console.log(err);
   }

@@ -9,8 +9,9 @@ import authRouter from "./router/authRouter.js";
 const app = express();
 dotenv.config();
 app.use(helmet());
-app.use(express.json());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
