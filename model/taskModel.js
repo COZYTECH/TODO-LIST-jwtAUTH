@@ -20,5 +20,5 @@ export const taskSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
-// const User = mongoose.model("User", taskSchema);
-// export default User;
+const Post = mongoose.model("Post", taskSchema);
+export default Post;

@@ -18,3 +18,7 @@ export const changePasswordSchema = joi.object({
     .required()
     .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
 });
+export const createTaskSchema = joi.object({
+  title: joi.string().min(5).max(60).required(),
+  description: joi.string().min(2).max(600).required(),
+});

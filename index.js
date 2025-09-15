@@ -5,6 +5,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRouter from "./router/authRouter.js";
+import taskRouter from "./router/taskRouter.js";
 
 const app = express();
 dotenv.config();
@@ -21,6 +22,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/api/auth", authRouter);
+app.use("/api", taskRouter);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
